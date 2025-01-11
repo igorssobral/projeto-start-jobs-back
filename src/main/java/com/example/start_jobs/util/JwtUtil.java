@@ -5,12 +5,25 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.stereotype.Component;
 
+import java.security.SecureRandom;
+import java.util.Base64;
 import java.util.Date;
 
 @Component
 public class JwtUtil {
 
-    private static final String SECRET_KEY = "sua_chave_secreta";
+    // Gera uma chave secreta aleatória no momento em que a classe é carregada
+    private static final String SECRET_KEY = generateSecretKey();
+
+    private static String generateSecretKey() {
+        // Define o tamanho da chave (32 bytes = 256 bits)
+        byte[] keyBytes = new byte[32];
+        SecureRandom secureRandom = new SecureRandom();
+        secureRandom.nextBytes(keyBytes);
+
+        // Converte os bytes para uma string base64 segura
+        return Base64.getEncoder().encodeToString(keyBytes);
+    }
 
     public String generateToken(Usuario usuario) {
         return Jwts.builder()
@@ -38,5 +51,10 @@ public class JwtUtil {
                 .parseClaimsJws(token)
                 .getBody()
                 .getSubject();
+    }
+
+    // Método para obter a chave secreta (apenas para debugging ou logs)
+    public String getSecretKey() {
+        return SECRET_KEY;
     }
 }
