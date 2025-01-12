@@ -18,7 +18,14 @@ public class UsuarioController {
     // Endpoint para criar um novo usuário
     @PostMapping
     public ResponseEntity<Usuario> criarUsuario(@RequestBody Usuario usuario) {
-        return ResponseEntity.ok(usuarioService.criarUsuario(usuario));
+        if (usuario.getSenha() == null || usuario.getSenha().isEmpty()) {
+            throw new IllegalArgumentException("A senha é obrigatória.");
+        }
+        if (usuario.getEmail() == null || usuario.getEmail().isEmpty()) {
+            throw new IllegalArgumentException("O email é obrigatório.");
+        }
+        Usuario usuarioCriado = usuarioService.criarUsuario(usuario);
+        return ResponseEntity.ok(usuarioCriado);
     }
 
     // Endpoint para buscar um usuário pelo email

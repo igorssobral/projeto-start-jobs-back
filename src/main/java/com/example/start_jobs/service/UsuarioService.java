@@ -11,6 +11,7 @@ import java.util.Optional;
 
 @Service
 public class UsuarioService {
+
     @Autowired
     private UsuarioRepository usuarioRepository;
 
@@ -20,11 +21,16 @@ public class UsuarioService {
     @Autowired
     private JwtUtil jwtUtil;
 
+    // Método para criar um novo usuário
     public Usuario criarUsuario(Usuario usuario) {
+        if (usuario.getSenha() == null || usuario.getSenha().isEmpty()) {
+            throw new IllegalArgumentException("A senha não pode ser nula ou vazia.");
+        }
         usuario.setSenha(passwordEncoder.encode(usuario.getSenha())); // Criptografa a senha
         return usuarioRepository.save(usuario);
     }
 
+    // Método para buscar um usuário pelo email
     public Optional<Usuario> buscarUsuarioPorEmail(String email) {
         return usuarioRepository.findByEmail(email);
     }
@@ -32,13 +38,12 @@ public class UsuarioService {
     // Método para autenticar o login e retornar um token JWT
     public String autenticarUsuario(String email, String senha) {
         Usuario usuario = usuarioRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado com o e-mail fornecido."));
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
 
         if (!passwordEncoder.matches(senha, usuario.getSenha())) {
-            throw new RuntimeException("Credenciais inválidas.");
+            throw new RuntimeException("Credenciais inválidas");
         }
 
-        // Gera o token JWT
         return jwtUtil.generateToken(usuario);
     }
 }
