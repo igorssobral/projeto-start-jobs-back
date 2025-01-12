@@ -20,25 +20,22 @@ public class UsuarioService {
     @Autowired
     private JwtUtil jwtUtil;
 
-    // Método para criar um novo usuário
     public Usuario criarUsuario(Usuario usuario) {
         usuario.setSenha(passwordEncoder.encode(usuario.getSenha())); // Criptografa a senha
         return usuarioRepository.save(usuario);
     }
 
-    // Método para buscar um usuário pelo nome de usuário
-    public Optional<Usuario> buscarUsuarioPorUsername(String username) {
-        return usuarioRepository.findByUsername(username);
+    public Optional<Usuario> buscarUsuarioPorEmail(String email) {
+        return usuarioRepository.findByEmail(email);
     }
 
     // Método para autenticar o login e retornar um token JWT
-    public String autenticarUsuario(String username, String senha) {
-        Usuario usuario = usuarioRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+    public String autenticarUsuario(String email, String senha) {
+        Usuario usuario = usuarioRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado com o e-mail fornecido."));
 
-        // Verifica se a senha está correta
         if (!passwordEncoder.matches(senha, usuario.getSenha())) {
-            throw new RuntimeException("Credenciais inválidas");
+            throw new RuntimeException("Credenciais inválidas.");
         }
 
         // Gera o token JWT

@@ -21,16 +21,16 @@ public class UsuarioController {
         return ResponseEntity.ok(usuarioService.criarUsuario(usuario));
     }
 
-    // Endpoint para buscar um usuário pelo username
-    @GetMapping("/{username}")
-    public ResponseEntity<Optional<Usuario>> buscarUsuario(@PathVariable String username) {
-        return ResponseEntity.ok(usuarioService.buscarUsuarioPorUsername(username));
+    // Endpoint para buscar um usuário pelo email
+    @GetMapping("/{email}")
+    public ResponseEntity<Optional<Usuario>> buscarUsuario(@PathVariable String email) {
+        return ResponseEntity.ok(usuarioService.buscarUsuarioPorEmail(email));
     }
 
     // Endpoint para login
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestParam String username, @RequestParam String senha) {
-        String token = usuarioService.autenticarUsuario(username, senha);
+    public ResponseEntity<String> login(@RequestParam String email, @RequestParam String senha) {
+        String token = usuarioService.autenticarUsuario(email, senha);
         return ResponseEntity.ok(token);
     }
 }
