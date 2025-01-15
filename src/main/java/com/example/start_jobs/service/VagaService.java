@@ -1,10 +1,12 @@
 package com.example.start_jobs.service;
 
+import com.example.start_jobs.entity.Dicas;
 import com.example.start_jobs.entity.Vaga;
 import com.example.start_jobs.repository.VagaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,6 +20,7 @@ public class VagaService {
     }
 
     public Vaga criarVaga(Vaga vaga) {
+        vaga.setDataCriacao(LocalDateTime.now()); // Define a data de publicação como o horário atual
         return vagaRepository.save(vaga);
     }
 
@@ -31,5 +34,13 @@ public class VagaService {
         vaga.setLocalizacao(vagaAtualizada.getLocalizacao());
         vaga.setImagem(vagaAtualizada.getImagem());
         return vagaRepository.save(vaga);
+    }
+
+    public Optional<Vaga> buscarVagaPorId(Long id) {
+        return vagaRepository.findById(id);
+    }
+
+    public void deletarVaga(Long id) {
+        vagaRepository.deleteById(id);
     }
 }

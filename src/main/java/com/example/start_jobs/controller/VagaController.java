@@ -1,5 +1,6 @@
 package com.example.start_jobs.controller;
 
+import com.example.start_jobs.entity.Dicas;
 import com.example.start_jobs.entity.Vaga;
 import com.example.start_jobs.service.VagaService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,5 +31,19 @@ public class VagaController {
     public ResponseEntity<Vaga> atualizarVaga(@PathVariable Long id, @RequestBody Vaga vaga) {
         Vaga vagaAtualizada = vagaService.atualizarVaga(id, vaga);
         return ResponseEntity.ok(vagaAtualizada);
+    }
+
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Vaga> buscarVagaPorId(@PathVariable Long id) {
+        return vagaService.buscarVagaPorId(id)
+            .map(ResponseEntity::ok)
+            .orElse(ResponseEntity.notFound().build());
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deletarVaga(@PathVariable Long id) {
+        vagaService.deletarVaga(id);
+        return ResponseEntity.noContent().build();
     }
 }
