@@ -16,6 +16,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable()) // Desabilita CSRF (caso necessário)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/usuarios/**").permitAll() // Permite acesso público para /api/usuarios/**
+                        .requestMatchers("/api/vagas/**").permitAll() // Permite acesso público para /api/vagas/**
                         .anyRequest().authenticated() // Exige autenticação para outras rotas
                 );
         return http.build();
