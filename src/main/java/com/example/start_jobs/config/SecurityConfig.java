@@ -17,6 +17,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/usuarios/**").permitAll() // Permite acesso público para /api/usuarios/**
                         .requestMatchers("/api/vagas/**").permitAll() // Permite acesso público para /api/vagas/**
+                        .requestMatchers("/api/dicas/**").permitAll() // Permite público para /api/dicas/**
                         .anyRequest().authenticated() // Exige autenticação para outras rotas
                 );
         return http.build();
