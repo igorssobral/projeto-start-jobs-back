@@ -18,6 +18,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/usuarios/**").permitAll() // Permite acesso público para /api/usuarios/**
                         .requestMatchers("/api/vagas/**").permitAll() // Permite acesso público para /api/vagas/**
                         .requestMatchers("/api/dicas/**").permitAll() // Permite público para /api/dicas/**
+                        .requestMatchers("/api/candidaturas/**").permitAll() // Permite público para /api/candidaturas/**
                         .anyRequest().authenticated() // Exige autenticação para outras rotas
                 );
         return http.build();
