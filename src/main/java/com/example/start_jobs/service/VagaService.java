@@ -20,7 +20,6 @@ public class VagaService {
     }
 
     public Vaga criarVaga(Vaga vaga) {
-        vaga.setDataCriacao(LocalDateTime.now()); // Define a data de publicação como o horário atual
         return vagaRepository.save(vaga);
     }
 
@@ -32,7 +31,7 @@ public class VagaService {
         vaga.setDescricao(vagaAtualizada.getDescricao());
         vaga.setEmpresa(vagaAtualizada.getEmpresa());
         vaga.setLocalizacao(vagaAtualizada.getLocalizacao());
-        vaga.setImagem(vagaAtualizada.getImagem());
+        vaga.setUrl(vagaAtualizada.getUrl());
         return vagaRepository.save(vaga);
     }
 
