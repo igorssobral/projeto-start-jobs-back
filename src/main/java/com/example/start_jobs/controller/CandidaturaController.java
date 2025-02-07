@@ -1,5 +1,6 @@
 package com.example.start_jobs.controller;
 
+import com.example.start_jobs.dto.CandidaturaDTO;
 import com.example.start_jobs.entity.Candidatura;
 import com.example.start_jobs.service.CandidaturaService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,29 +18,50 @@ public class CandidaturaController {
     private CandidaturaService candidaturaService;
 
     @PostMapping
-    public ResponseEntity<Candidatura> criarCandidatura(@RequestBody Candidatura candidatura) {
-        return ResponseEntity.ok(candidaturaService.criarCandidatura(candidatura));
+    public ResponseEntity<?> criarCandidatura(@RequestBody CandidaturaDTO candidaturaDTO) {
+        try {
+            Candidatura candidaturaSalva = candidaturaService.criarCandidatura(candidaturaDTO);
+            return ResponseEntity.ok(candidaturaSalva);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @GetMapping
-    public ResponseEntity<List<Candidatura>> listarCandidaturas() {
+    public ResponseEntity<List<CandidaturaDTO>> listarCandidaturas() {
         return ResponseEntity.ok(candidaturaService.listarCandidaturas());
     }
+
 
     @GetMapping("/{id}")
     public ResponseEntity<Optional<Candidatura>> buscarCandidaturaPorId(@PathVariable Long id) {
         return ResponseEntity.ok(candidaturaService.buscarCandidaturaPorId(id));
     }
 
-    @GetMapping("/usuario/{idUsuario}")
-    public ResponseEntity<List<Candidatura>> listarCandidaturasPorUsuario(@PathVariable Long idUsuario) {
-        return ResponseEntity.ok(candidaturaService.listarCandidaturasPorUsuario(idUsuario));
+    @GetMapping("/usuario/{id}")
+    public ResponseEntity<List<CandidaturaDTO>> listarCandidaturasPorUsuario(@PathVariable Long id) {
+        return ResponseEntity.ok(candidaturaService.listarCandidaturasPorUsuario(id));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Candidatura> atualizarCandidatura(
             @PathVariable Long id, @RequestBody Candidatura candidaturaAtualizada) {
         return ResponseEntity.ok(candidaturaService.atualizarCandidatura(id, candidaturaAtualizada));
+    }
+
+    @PutMapping("/status/{id}")
+    public ResponseEntity<CandidaturaDTO> adicionarNovoStatus(
+            @PathVariable Long id,
+            @RequestBody CandidaturaDTO candidaturaDTO) {
+        CandidaturaDTO updatedCandidatura = candidaturaService.adicionarNovosStatus(id, candidaturaDTO.getStatusCandidatura());
+        return ResponseEntity.ok(updatedCandidatura);
+    }
+    @PutMapping("/update-status/{id}")
+    public ResponseEntity<CandidaturaDTO> atualizarStatus(
+            @PathVariable Long id,
+            @RequestBody CandidaturaDTO candidaturaDTO) {
+        CandidaturaDTO updatedCandidatura = candidaturaService.atualizarStatus(id, candidaturaDTO);
+        return ResponseEntity.ok(updatedCandidatura);
     }
 
     @DeleteMapping("/{id}")
