@@ -21,7 +21,7 @@ public class CandidaturaController {
     public ResponseEntity<?> criarCandidatura(@RequestBody CandidaturaDTO candidaturaDTO) {
         try {
             Candidatura candidaturaSalva = candidaturaService.criarCandidatura(candidaturaDTO);
-            return ResponseEntity.ok(candidaturaSalva);
+            return ResponseEntity.ok().body("Candidatura criada com sucesso!");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
