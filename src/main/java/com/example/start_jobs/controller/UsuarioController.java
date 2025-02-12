@@ -38,6 +38,7 @@ public class UsuarioController {
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestParam String email, @RequestParam String senha) {
         String token = usuarioService.autenticarUsuario(email, senha);
+        System.out.println(token);
         return ResponseEntity.ok(token);
     }
 }
