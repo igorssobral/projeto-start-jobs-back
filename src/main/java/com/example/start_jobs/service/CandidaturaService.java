@@ -39,32 +39,36 @@ public class CandidaturaService {
     public Candidatura criarCandidatura(CandidaturaDTO candidaturaDTO) {
         Optional<Usuario> usuarioOptional = usuarioRepository.findById(candidaturaDTO.getIdUsuario());
 
-        Optional<Vaga> vagaOptional = vagaRepository.findVagaByUrl(candidaturaDTO.getVaga().getUrl());
-
-        if(vagaOptional.isPresent()){
-            throw new IllegalArgumentException("Você ja se candidatou nessa vaga!");
-        }
         if (usuarioOptional.isEmpty()) {
             throw new IllegalArgumentException("Usuário não encontrado");
         }
 
-        Vaga vaga = new Vaga();
-        vaga.setTitulo(candidaturaDTO.getVaga().getTitulo());
-        vaga.setDescricao(candidaturaDTO.getVaga().getDescricao());
-        vaga.setEmpresa(candidaturaDTO.getVaga().getEmpresa());
-        vaga.setLocalizacao(candidaturaDTO.getVaga().getLocalizacao());
-        vaga.setSenioridade(candidaturaDTO.getVaga().getSenioridade());
-        vaga.setModeloTrabalho(candidaturaDTO.getVaga().getModeloTrabalho());
-        vaga.setUrl(candidaturaDTO.getVaga().getUrl());
-        vaga.setDataCriacao(candidaturaDTO.getVaga().getDataCriacao());
-
-        Vaga vagaSalva = vagaRepository.save(vaga);
-
         Usuario usuario = usuarioOptional.get();
+
+        Optional<Candidatura> candidaturaExistente = candidaturaRepository
+                .findByUsuarioIdUsuarioAndAndVaga_Url(usuario.getIdUsuario(), candidaturaDTO.getVaga().getUrl());
+
+        if (candidaturaExistente.isPresent()) {
+            throw new IllegalArgumentException("Você já se candidatou nessa vaga!");
+        }
+
+        Vaga vaga = vagaRepository.findVagaByUrl(candidaturaDTO.getVaga().getUrl())
+                .orElseGet(() -> {
+                    Vaga novaVaga = new Vaga();
+                    novaVaga.setTitulo(candidaturaDTO.getVaga().getTitulo());
+                    novaVaga.setDescricao(candidaturaDTO.getVaga().getDescricao());
+                    novaVaga.setEmpresa(candidaturaDTO.getVaga().getEmpresa());
+                    novaVaga.setLocalizacao(candidaturaDTO.getVaga().getLocalizacao());
+                    novaVaga.setSenioridade(candidaturaDTO.getVaga().getSenioridade());
+                    novaVaga.setModeloTrabalho(candidaturaDTO.getVaga().getModeloTrabalho());
+                    novaVaga.setUrl(candidaturaDTO.getVaga().getUrl());
+                    novaVaga.setDataCriacao(candidaturaDTO.getVaga().getDataCriacao());
+                    return vagaRepository.save(novaVaga);
+                });
 
         Candidatura candidatura = new Candidatura();
         candidatura.setUsuario(usuario);
-        candidatura.setVaga(vagaSalva);
+        candidatura.setVaga(vaga);
 
         Candidatura candidaturaSalva = candidaturaRepository.save(candidatura);
 
@@ -74,7 +78,6 @@ public class CandidaturaService {
             statusCandidatura.setLabel(statusDTO.getLabel());
             statusCandidatura.setCompleted(statusDTO.isCompleted());
             statusCandidatura.setDataStatus(LocalDateTime.now());
-
             statusCandidatura.setCandidatura(candidaturaSalva);
 
             statusCandidaturasList.add(statusCandidatura);
@@ -84,6 +87,7 @@ public class CandidaturaService {
 
         return candidaturaSalva;
     }
+
 
 
     public List<CandidaturaDTO> listarCandidaturas() {
