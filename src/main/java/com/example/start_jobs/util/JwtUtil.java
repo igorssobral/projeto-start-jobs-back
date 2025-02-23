@@ -1,10 +1,10 @@
 package com.example.start_jobs.util;
 
 import com.example.start_jobs.entity.Usuario;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+
 
 import java.util.Date;
 
@@ -16,7 +16,7 @@ public class JwtUtil {
 
     public String generateToken(Usuario usuario) {
         return Jwts.builder()
-                .setSubject(usuario.getUsername())
+                .setSubject(usuario.getEmail())
                 .claim("idUsuario", usuario.getIdUsuario())
                 .claim("nome", usuario.getNome())
                 .setIssuedAt(new Date())
@@ -27,18 +27,31 @@ public class JwtUtil {
 
     public boolean validateToken(String token) {
         try {
-            Jwts.parser().setSigningKey(secretKey.getBytes()).parseClaimsJws(token);
+            Jwts.parserBuilder().setSigningKey(secretKey.getBytes()).build().parseClaimsJws(token);
             return true;
+        } catch (ExpiredJwtException e) {
+            System.err.println("Token expirado: " + e.getMessage());
+        } catch (SignatureException e) {
+            System.err.println("Assinatura inválida: " + e.getMessage());
+        } catch (MalformedJwtException e) {
+            System.err.println("Token mal formado: " + e.getMessage());
+        } catch (UnsupportedJwtException e) {
+            System.err.println("Token não suportado: " + e.getMessage());
         } catch (Exception e) {
-            return false;
+            System.err.println("Erro ao validar token: " + e.getMessage());
         }
+        return false;
     }
 
     public String getUsernameFromToken(String token) {
-        return Jwts.parser()
+        return Jwts.parserBuilder()
                 .setSigningKey(secretKey.getBytes())
+                .build()
                 .parseClaimsJws(token)
                 .getBody()
                 .getSubject();
     }
+
+
+
 }
