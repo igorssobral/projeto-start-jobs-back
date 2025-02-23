@@ -3,6 +3,7 @@ package com.example.start_jobs.entity;
 import com.example.start_jobs.dto.StatusCandidaturaDTO;
 import com.example.start_jobs.dto.VagaDTO;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -21,6 +22,8 @@ public class Vaga {
     private Integer idVaga;
 
     private String titulo;
+
+    @Lob
     private String descricao;
     private String empresa;
     private String localizacao;
