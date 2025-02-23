@@ -3,6 +3,7 @@ package com.example.start_jobs.entity;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -22,4 +23,10 @@ public class Usuario {
 
     @OneToMany(mappedBy = "usuario")
     private List<Candidatura> candidaturas;
+
+    @Column(name = "PASSWORD_RESET_TOKEN")
+    private String passwordResetToken;
+
+    @Column(name = "PASSWORD_RESET_EXPIRATION")
+    private LocalDateTime passwordResetExpiration;
 }
