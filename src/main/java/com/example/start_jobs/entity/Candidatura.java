@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -21,7 +22,7 @@ public class Candidatura {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer idCandidatura;
 
-    @OneToMany(mappedBy = "candidatura", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "candidatura", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<StatusCandidatura> statusCandidatura;
 
     @ManyToOne

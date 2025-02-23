@@ -38,12 +38,16 @@ public class UsuarioService {
     // Método para autenticar o login e retornar um token JWT
     public String autenticarUsuario(String email, String senha) {
         Usuario usuario = usuarioRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+                .orElseThrow(() -> new RuntimeException("Credenciais inválidas"));
 
         if (!passwordEncoder.matches(senha, usuario.getSenha())) {
-            throw new RuntimeException("Credenciais inválidas");
+            throw new RuntimeException("Credenciais inválidas!");
         }
 
         return jwtUtil.generateToken(usuario);
+    }
+
+    public Optional<Usuario> findByPasswordResetToken(String token) {
+        return usuarioRepository.findByPasswordResetToken(token);
     }
 }
