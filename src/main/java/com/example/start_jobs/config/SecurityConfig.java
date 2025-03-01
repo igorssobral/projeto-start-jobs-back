@@ -27,6 +27,9 @@ public class SecurityConfig {
                         .requestMatchers("/api/candidaturas/**").authenticated()
                         .requestMatchers("/api/usuarios/forgot-password").permitAll()
                         .requestMatchers("/api/usuarios/reset-password").permitAll()
+                        .requestMatchers("/v3/api-docs/**").permitAll()
+                        .requestMatchers("/swagger-ui/**").permitAll()
+
                         .anyRequest().authenticated()
                 )				.addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
         ;
