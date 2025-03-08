@@ -6,6 +6,8 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -24,6 +26,7 @@ public class Vaga {
     private String titulo;
 
     @Lob
+    @Fetch(FetchMode.JOIN)
     private String descricao;
     private String empresa;
     private String localizacao;
