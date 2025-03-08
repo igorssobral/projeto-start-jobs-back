@@ -35,7 +35,9 @@ public class CandidaturaService {
 
     @Autowired
     private VagaRepository vagaRepository;
+    private Candidatura candidaturaSalva;
 
+    @Transactional
     public Candidatura criarCandidatura(CandidaturaDTO candidaturaDTO) {
         Optional<Usuario> usuarioOptional = usuarioRepository.findById(candidaturaDTO.getIdUsuario());
 
@@ -90,7 +92,7 @@ public class CandidaturaService {
     }
 
 
-
+    @Transactional
     public List<CandidaturaDTO> listarCandidaturas() {
         List<Candidatura> candidatura = candidaturaRepository.findAll();
         return candidatura.stream()
@@ -98,10 +100,12 @@ public class CandidaturaService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     public Optional<Candidatura> buscarCandidaturaPorId(Long id) {
         return candidaturaRepository.findById(id);
     }
 
+    @Transactional
     public List<CandidaturaDTO> listarCandidaturasPorUsuario(Long idUsuario) {
         List<Candidatura> candidaturas = candidaturaRepository.findByUsuarioIdUsuario(idUsuario);
 
@@ -112,7 +116,7 @@ public class CandidaturaService {
                 .collect(Collectors.toList());
     }
 
-
+    @Transactional
     public Candidatura atualizarCandidatura(Long id, Candidatura candidaturaAtualizada) {
         Candidatura candidatura = candidaturaRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Candidatura não encontrada"));
