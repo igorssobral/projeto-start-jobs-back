@@ -26,8 +26,8 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/usuarios/**").permitAll()
-                        .requestMatchers("/api/vagas/**").permitAll()
-                        .requestMatchers("/api/dicas/**").permitAll()
+                        .requestMatchers("/api/vagas/**").authenticated()
+                        .requestMatchers("/api/dicas/**").authenticated()
                         .requestMatchers("/api/candidaturas/**").authenticated()
                         .requestMatchers("/api/usuarios/forgot-password").permitAll()
                         .requestMatchers("/api/usuarios/reset-password").permitAll()
