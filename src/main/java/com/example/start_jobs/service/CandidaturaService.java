@@ -6,6 +6,7 @@ import com.example.start_jobs.entity.Candidatura;
 import com.example.start_jobs.entity.StatusCandidatura;
 import com.example.start_jobs.entity.Usuario;
 import com.example.start_jobs.entity.Vaga;
+import com.example.start_jobs.exceptions.StatusAlreadyExistsException;
 import com.example.start_jobs.repository.CandidaturaRepository;
 import com.example.start_jobs.repository.StatusCandidaturaRepository;
 import com.example.start_jobs.repository.UsuarioRepository;
@@ -15,10 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -133,13 +131,13 @@ public class CandidaturaService {
         if (candidaturaOptional.isPresent()) {
             Candidatura candidatura = candidaturaOptional.get();
 
-            for (StatusCandidatura status : candidatura.getStatusCandidatura()) {
-                StatusCandidaturaDTO statusDTO = candidaturaDTO.getStatusCandidatura().stream()
-                        .filter(dto -> dto.getId().equals(status.getIdStatus()))
-                        .findFirst()
-                        .orElse(null);
+            Map<Integer, StatusCandidatura> statusMap = candidatura.getStatusCandidatura().stream()
+                    .collect(Collectors.toMap(StatusCandidatura::getIdStatus, status -> status));
 
-                if (statusDTO != null) {
+            for (StatusCandidaturaDTO statusDTO : candidaturaDTO.getStatusCandidatura()) {
+                StatusCandidatura status = statusMap.get(statusDTO.getId());
+
+                if (status != null) {
                     status.setApproved(statusDTO.isApproved());
                     status.setRejected(statusDTO.isRejected());
                     if (status.getDataStatus() == null) {
@@ -147,10 +145,11 @@ public class CandidaturaService {
                     }
                 }
             }
-            List<StatusCandidatura> sortedStatus = candidatura.getStatusCandidatura().stream()
+
+            // Ordenando os status por data
+            candidatura.setStatusCandidatura(candidatura.getStatusCandidatura().stream()
                     .sorted(Comparator.comparing(StatusCandidatura::getDataStatus))
-                    .collect(Collectors.toList());
-            candidatura.setStatusCandidatura(sortedStatus);
+                    .collect(Collectors.toList()));
 
             candidaturaRepository.save(candidatura);
 
@@ -161,12 +160,16 @@ public class CandidaturaService {
     }
 
 
+
     @Transactional
     public CandidaturaDTO adicionarNovosStatus(Long id, List<StatusCandidaturaDTO> statusCandidaturaDTOList) {
         Optional<Candidatura> candidaturaOptional = candidaturaRepository.findById(id);
 
         if (candidaturaOptional.isPresent()) {
             Candidatura candidatura = candidaturaOptional.get();
+
+            // Conjunto para verificar a duplicação de status de forma eficiente (utilizando o equals)
+            Set<StatusCandidatura> existingStatuses = new HashSet<>(candidatura.getStatusCandidatura());
 
             List<StatusCandidatura> newStatuses = statusCandidaturaDTOList.stream()
                     .map(statusDTO -> {
@@ -177,12 +180,20 @@ public class CandidaturaService {
                         }
 
                         status.setCandidatura(candidatura);
+
+                        // Verifica se o status já existe
+                        if (existingStatuses.contains(status)) {
+                            throw new StatusAlreadyExistsException("O status já foi adicionado para esta candidatura.");
+                        }
+
                         return status;
                     })
-                    .toList();
+                    .collect(Collectors.toList());
 
+            // Adiciona os novos status
             candidatura.getStatusCandidatura().addAll(newStatuses);
 
+            // Salva a candidatura com os novos status
             candidaturaRepository.save(candidatura);
 
             return new CandidaturaDTO(candidatura);
@@ -190,6 +201,8 @@ public class CandidaturaService {
             throw new RuntimeException("Candidatura não encontrada");
         }
     }
+
+
 
     public void deletarCandidatura(Long id) {
         candidaturaRepository.deleteById(id);
